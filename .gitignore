@@ -1,0 +1,14 @@
+user_config.json
+data_cache.json
+avatar_cache.png
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+build/
+dist/
+*.spec
+.DS_Store
+Thumbs.db
+gui_app_abondoned.py

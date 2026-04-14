@@ -99,9 +99,11 @@ class CFDataService:
     def fetch_all_dashboard_data(self):
         h = self.config.get("handle")
         if not h: raise ValueError("Handle is empty")
-        
+        basic_info = self.spider.get_user_info(h)
+        if not basic_info:
+            raise Exception("获取基础信息失败，网络异常或被拦截")
         new_data = {}
-        new_data["basic_info"] = self.spider.get_user_info(h)
+        new_data["basic_info"] = basic_info
         new_data["upcoming"] = self.spider.get_upcoming_contests(self.config.get("contest_n", 5), self.config.get("contest_filters", ["All"]))
         new_data["rating_change"] = self.spider.get_recent_rating_changes(h, self.config.get("rating_n", 5))
         new_data["last_contest"] = self.spider.get_time_since_last_contest(h)
@@ -121,7 +123,11 @@ class CFDataService:
     def fetch_wrong_problems(self):
         h = self.config.get("handle")
         if not h: return
-        self.state.wrong_list = self.spider.get_wrong_problems(h, count=50)
+        wl = self.spider.get_wrong_problems(h, count=50)
+        if wl is None:
+            raise Exception("获取错题本失败，网络异常")
+            
+        self.state.wrong_list = wl
         self.state.save_cache()
 
     def _download_avatar(self, url):
